@@ -1,17 +1,40 @@
 [gd_scene format=3 uid="uid://bxixsaw4svt0e"]
 
-[ext_resource type="Script" uid="uid://q03w44pav7eu" path="res://scripts/Main.cs" id="1_ig7tw"]
+[ext_resource type="Script" uid="uid://q03w44pav7eu" path="res://scripts/Main.cs" id="1_h2yge"]
 [ext_resource type="Script" uid="uid://cwahowmsb3o54" path="res://scripts/Camera.cs" id="2_0xm2m"]
-
-[sub_resource type="SphereMesh" id="SphereMesh_0xm2m"]
+[ext_resource type="PackedScene" uid="uid://6qrknah3b202" path="res://Forest.blend" id="3_h2yge"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h2yge"]
-albedo_color = Color(0.16159043, 0.3906511, 1, 1)
+albedo_color = Color(0.25490198, 0.61960787, 1, 1)
 
-[node name="Main" type="Node3D" unique_id=1016063349]
-script = ExtResource("1_ig7tw")
-mesh = SubResource("SphereMesh_0xm2m")
+[sub_resource type="SphereMesh" id="SphereMesh_1bvp3"]
 material = SubResource("StandardMaterial3D_h2yge")
+radius = 0.1
+height = 0.2
+
+[sub_resource type="MultiMesh" id="MultiMesh_h2yge"]
+transform_format = 1
+mesh = SubResource("SphereMesh_1bvp3")
+
+[node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("mesh")]
+script = ExtResource("1_h2yge")
+radius = 1.0
+target_density = 2.0
+pressure = 20.0
+viscosity = 0.8
+mesh = NodePath("FluidMultiMesh")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1907102811]
 script = ExtResource("2_0xm2m")
+
+[node name="Forest2" parent="." unique_id=1070745291 instance=ExtResource("3_h2yge")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2881093, -4.2537684, -4.493911)
+visible = false
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1426533171]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5215454, -9.395487, -2.0359497)
+size = Vector3(13.781372, 1, 15.629272)
+
+[node name="FluidMultiMesh" type="MultiMeshInstance3D" parent="." unique_id=913744954]
+extra_cull_margin = 100.0
+multimesh = SubResource("MultiMesh_h2yge")

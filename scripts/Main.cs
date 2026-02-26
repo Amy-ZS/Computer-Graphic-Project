@@ -1,133 +1,102 @@
 using Godot;
 using System;
-using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 public partial class Main : Node3D
 {
-	//this is using the Smoothed Particle Hydrodynamics way of simulating fluids
-	//i learned this from Sebastion Lague on yt, u guys should check it out to better understand it
+    private RenderingDevice rendering_device;
+    private Rid shader;
+    private Rid pipeline;
 
-	//i followed a bit of https://personal.ems.psu.edu/~fkd/courses/EGEE520/2017Deliverables/SPH_2017.pdf
-	//we can base the sim off the equations there
+    [Export] public int count = 5000;
+    [Export] public Vector3 bounds = new(5, 5, 5);
 
-	//mass is uniform
-	struct Particle {
-		public Vector3 position;
-		public Vector3 velocity;
-		public float density;
-	}
+    [Export] public float radius = 1f;
+    [Export] public float target_density = 2f;
+    [Export] public float pressure = 20f;
+    [Export] public float viscosity = .8f;
+    [Export] public MultiMeshInstance3D mesh;
 
-	[Export] public Mesh mesh;
-	[Export] public Material material;
+    private Rid pos_buffer;
+    private Rid vel_buffer;
+    private Rid den_buffer;
+    
+    private Rid uniform_set;
 
-	[Export] public float size = 0.1f;
-	[Export] public float damping = 0.8f;
-	[Export] public float gravity = -9.8f;
-	[Export] public int count = 1000;
+    public override void _Ready() {
+        rendering_device = RenderingServer.CreateLocalRenderingDevice();
 
-	//these are part of the SPH
-	[Export] public float radius = 0.5f;
-	[Export] public float pressure = 5f;
-	[Export] public float viscosity = 0.1f;
+        RDShaderFile shaderFile = GD.Load<RDShaderFile>("res://scripts/compute_shader.glsl");
+        shader = rendering_device.ShaderCreateFromSpirV(shaderFile.GetSpirV());
+        pipeline = rendering_device.ComputePipelineCreate(shader);
 
-	[Export] public Vector3 bounds = new(4, 4, 4);
+        float[] starting_positions = new float[count * 4];
+        float spacing = 2;
 
-	private Particle[] particles;
-	private MultiMeshInstance3D matrices;
+        for (int i = 0; i < count; i++) {
+            starting_positions[i*4] = (float)GD.RandRange(-spacing, spacing);
+            starting_positions[i*4 + 1] = (float)GD.RandRange(-spacing, spacing);
+            starting_positions[i*4 + 2] = (float)GD.RandRange(-spacing, spacing);
+            starting_positions[i*4 + 3] = 0.0f;
+        }
 
-	private Vector3 half_bounds;
-	private float half_size;
+        byte[] starting_positions_bytes = MemoryMarshal.AsBytes(starting_positions.AsSpan()).ToArray();
+    
+        pos_buffer = rendering_device.StorageBufferCreate((uint)count*16, starting_positions_bytes); // 4 floats
+        vel_buffer = rendering_device.StorageBufferCreate((uint)(count*16)); // 4 floats
+        den_buffer = rendering_device.StorageBufferCreate((uint)(count*4)); // 1 float  
 
-	public override void _Ready()
-	{
-		particles = new Particle[count];
-		half_bounds = bounds/2;
-		half_size = size/2;
+        RDUniform bind0 = new RDUniform { Binding = 0, UniformType = RenderingDevice.UniformType.StorageBuffer }; bind0.AddId(pos_buffer);
+        RDUniform bind1 = new RDUniform { Binding = 1, UniformType = RenderingDevice.UniformType.StorageBuffer }; bind1.AddId(vel_buffer);
+        RDUniform bind2 = new RDUniform { Binding = 2, UniformType = RenderingDevice.UniformType.StorageBuffer }; bind2.AddId(den_buffer);
+        uniform_set = rendering_device.UniformSetCreate(new Godot.Collections.Array<RDUniform> { bind0, bind1, bind2 }, shader, 0);
 
-		matrices = new MultiMeshInstance3D();
-		var mm = new MultiMesh {
-			TransformFormat = MultiMesh.TransformFormatEnum.Transform3D,
-			InstanceCount = count,
-			Mesh = mesh
-		};
-		matrices.Multimesh = mm;
-		matrices.MaterialOverride = material;
-		AddChild(matrices);
+        mesh.Multimesh.InstanceCount = count;
+    }
 
-		var random = new RandomNumberGenerator();
-		for (int i = 0; i < count; i++)
-		{
-			particles[i].position = new Vector3(
-				random.RandfRange(-half_bounds.X, half_bounds.X),
-				random.RandfRange(-half_bounds.Y, half_bounds.Y),
-				random.RandfRange(-half_bounds.Z, half_bounds.Z)
-			);
-		}
-	}
+    public override void _Process(double delta) {
+        RunCompute((float)delta);
 
-	public override void _Process(double delta)
-	{
-		//calculate density
-		//ngl this is mega unoptimized, the multithreading is helping but we need to ultimately put this in a shader
-		//this is good for now though as idk how to do shaders
-		//we should not do shaders yet cus we should work on this sim in c# unless one of you want to switch early
-		Parallel.For(0, count, i => {
-			float d = 0;
-			for (int j = 0; j < count; j++) {
-				float dist = particles[i].position.DistanceTo(particles[j].position);
-				if (dist < radius) {
-					float influence = 1f - (dist / radius);
-					d += influence * influence;
-				}
-			}
-			particles[i].density = d;
-		});
+        byte[] pos_bytes = rendering_device.BufferGetData(pos_buffer);
+        ReadOnlySpan<float> pos_data = MemoryMarshal.Cast<byte, float>(pos_bytes);
 
-		for (int i = 0; i < count; i++) {
-			Vector3 pressureForce = Vector3.Zero;
+        for (int i = 0; i < count; i++) {
+            Vector3 position = new Vector3(pos_data[i*4], pos_data[i*4+1], pos_data[i*4+2]);
+            mesh.Multimesh.SetInstanceTransform(i, new Transform3D(Basis.Identity, position));
+        }
+    }
 
-			//not done
-			//also kinda sucks performance wise, the pdf has optimization stuff
-			for (int j = 0; j < count; j++) {
-				if (i == j) continue;
+    private void RunCompute(float dt)
+    {
+        float[] vals = { //total 48
+            radius, //4
+            count, //4
+            dt, //4, change this to 1/30f if u wanna normalize it
+            target_density, //4 
+            pressure, //4
+            viscosity, //4
+            0f, //4
+            0f, //4
+            bounds.X, //4
+            bounds.Y, //4
+            bounds.Z, //4
+            0f //4
+        };
 
-				Vector3 diff = particles[i].position - particles[j].position;
-				float dist = diff.Length();
+        //turn our info into bytes
+        byte[] bytes = MemoryMarshal.AsBytes(vals.AsSpan()).ToArray();
 
-				if (dist < radius) {
-					float influence = 1f - (dist/radius);
-					pressureForce += diff.Normalized() * influence * pressure;
-				}
-			}
+        long list = rendering_device.ComputeListBegin(); //begin gpu instruction
+        rendering_device.ComputeListBindComputePipeline(list, pipeline); //give it our shader
 
-			particles[i].velocity += (pressureForce + new Vector3(0, gravity, 0)) * (float)delta;
-			particles[i].velocity *= 1f - viscosity;
-			particles[i].position += particles[i].velocity * (float)delta;
+        rendering_device.ComputeListBindUniformSet(list, uniform_set, 0); //tells the program where to put our info
+        
+        rendering_device.ComputeListSetPushConstant(list, bytes, (uint)bytes.Length);
+        rendering_device.ComputeListDispatch(list, (uint)Mathf.Ceil(count / 64.0f), 1, 1); //separates the processing into groups of 64
+        //we are also doing this in a 1d array
 
-			HandleBounds(ref particles[i]);
-
-			Transform3D t = Transform3D.Identity;
-			t = t.Scaled(new Vector3(size, size, size));
-			t.Origin = particles[i].position;
-			matrices.Multimesh.SetInstanceTransform(i, t);
-		}
-	}
-
-	//check box collisions
-	//this is very temporary cus im not sure how you would handle collisions with other objects with a sim like this
-	//it would tank performance so much
-	private void HandleBounds(ref Particle p) {
-		if (Mathf.Abs(p.position.X) + half_size > half_bounds.X) {
-			p.position.X = (half_bounds.X - half_size) * Mathf.Sign(p.position.X);
-			p.velocity.X *= -damping;
-		}
-		if (Mathf.Abs(p.position.Y) + half_size > half_bounds.Y) {
-			p.position.Y = (half_bounds.Y - half_size) * Mathf.Sign(p.position.Y);
-			p.velocity.Y *= -damping;
-		}
-		if (Mathf.Abs(p.position.Z) + half_size > half_bounds.Z) {
-			p.position.Z = (half_bounds.Z - half_size) * Mathf.Sign(p.position.Z);
-			p.velocity.Z *= -damping;
-		}
-	}
+        rendering_device.ComputeListEnd();
+        rendering_device.Submit();
+        rendering_device.Sync();
+    }
 }
