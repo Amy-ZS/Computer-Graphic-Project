@@ -20,7 +20,14 @@ public partial class Camera : Camera3D
             RotationDegrees = new Vector3(x, y, 0);
         }
 
-        if (@event is InputEventKey keyEvent && keyEvent.Pressed && keyEvent.Keycode == Key.Escape) ToggleCursor();
+        if (@event is InputEventKey keyEvent && keyEvent.Pressed) {
+            if(keyEvent.Keycode == Key.Escape) {
+                ToggleCursor();
+            } else if (keyEvent.Keycode == Key.F) {
+                GD.Print("hi");
+                GameManager.ToggleTime();
+            }
+        }
     }
 
     public override void _Process(double delta)

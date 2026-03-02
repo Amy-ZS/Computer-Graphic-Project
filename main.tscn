@@ -1,40 +1,102 @@
 [gd_scene format=3 uid="uid://bxixsaw4svt0e"]
 
-[ext_resource type="Script" uid="uid://q03w44pav7eu" path="res://scripts/Main.cs" id="1_h2yge"]
+[ext_resource type="Script" uid="uid://b6mcv0itgx0fl" path="res://scripts/FluidSim.cs" id="1_lquwl"]
 [ext_resource type="Script" uid="uid://cwahowmsb3o54" path="res://scripts/Camera.cs" id="2_0xm2m"]
-[ext_resource type="PackedScene" uid="uid://6qrknah3b202" path="res://Forest.blend" id="3_h2yge"]
+[ext_resource type="Shader" uid="uid://x7srn7pkj6fa" path="res://scripts/water.gdshader" id="3_lquwl"]
+[ext_resource type="Script" uid="uid://byumstshjpmwo" path="res://scripts/GameManager.cs" id="4_1bvp3"]
+[ext_resource type="PackedScene" uid="uid://1vjo7g7oqt16" path="res://assets/models/forest_bd33730e-d58e-45f2-b102-19d02f8ddbe3/forest_2K_9cc666dc-d51e-4968-a5b7-472ff3f64205.blend" id="5_7mycd"]
+[ext_resource type="CompressedTexture3D" uid="uid://c8e2e6pd30a15" path="res://main.GPUParticlesCollisionSDF3D_data.exr" id="5_lquwl"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_h2yge"]
-albedo_color = Color(0.25490198, 0.61960787, 1, 1)
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1bvp3"]
+albedo_color = Color(0.26666668, 0.38431373, 1, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_1bvp3"]
-material = SubResource("StandardMaterial3D_h2yge")
-radius = 0.1
-height = 0.2
+material = SubResource("StandardMaterial3D_1bvp3")
+radius = 0.125
+height = 0.25
 
 [sub_resource type="MultiMesh" id="MultiMesh_h2yge"]
 transform_format = 1
 mesh = SubResource("SphereMesh_1bvp3")
 
-[node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("mesh")]
-script = ExtResource("1_h2yge")
-radius = 1.0
-target_density = 2.0
-pressure = 20.0
-viscosity = 0.8
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lquwl"]
+albedo_color = Color(1, 0.1882353, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mycd"]
+albedo_color = Color(0.22352941, 0.41960785, 0.14117648, 1)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_lquwl"]
+render_priority = 0
+shader = ExtResource("3_lquwl")
+shader_parameter/count = 0
+shader_parameter/radius = 0.5
+shader_parameter/smooth_k = 0.2
+shader_parameter/water_color = Color(0.1, 0.4, 0.8, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7mycd"]
+material = SubResource("ShaderMaterial_lquwl")
+size = Vector3(10, 10, 10)
+
+[node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("sdf_node", "mesh", "marched_mesh")]
+script = ExtResource("1_lquwl")
+sdf_node = NodePath("GPUParticlesCollisionSDF3D")
+bounds = Vector3(5, 5, 5)
 mesh = NodePath("FluidMultiMesh")
+marched_mesh = NodePath("SubViewport/RenderedWaterMesh")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1907102811]
 script = ExtResource("2_0xm2m")
 
-[node name="Forest2" parent="." unique_id=1070745291 instance=ExtResource("3_h2yge")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6.2881093, -4.2537684, -4.493911)
-visible = false
-
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=1426533171]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5215454, -9.395487, -2.0359497)
-size = Vector3(13.781372, 1, 15.629272)
-
 [node name="FluidMultiMesh" type="MultiMeshInstance3D" parent="." unique_id=913744954]
 extra_cull_margin = 100.0
 multimesh = SubResource("MultiMesh_h2yge")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=281573487]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 54.888943)
+
+[node name="GameManager" type="Node3D" parent="." unique_id=1502950226]
+script = ExtResource("4_1bvp3")
+
+[node name="GPUParticlesCollisionSDF3D" type="GPUParticlesCollisionSDF3D" parent="." unique_id=1602202659]
+size = Vector3(10, 10, 10)
+resolution = 3
+thickness = 2.0
+texture = ExtResource("5_lquwl")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=221158971]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2942799, -4.509808, 0)
+
+[node name="CSGBox3D5" type="CSGBox3D" parent="." unique_id=545748371]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1467495, -7.7725997, 5.100005)
+size = Vector3(6, 1, 6)
+material = SubResource("StandardMaterial3D_lquwl")
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=1353093458]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0651499, -2.182561, -2.1626067)
+size = Vector3(1, 5.7197266, 1)
+
+[node name="CSGBox3D6" type="CSGBox3D" parent="." unique_id=11703221]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8227895, -2.182561, -5.526724)
+size = Vector3(6.775879, 5.7197266, 1)
+material = SubResource("StandardMaterial3D_7mycd")
+
+[node name="CSGBox3D4" type="CSGBox3D" parent="." unique_id=1340003387]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8772298, -6.267573, -2.1626067)
+
+[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=1058118032]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0651499, -4.542424, 0)
+
+[node name="CSGSphere3D" type="CSGSphere3D" parent="." unique_id=1647149648]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.4096603, 2.2647934)
+
+[node name="SubViewport" type="SubViewport" parent="." unique_id=576479751]
+render_target_update_mode = 1
+
+[node name="RenderedWaterMesh" type="MeshInstance3D" parent="SubViewport" unique_id=806546337]
+layers = 4
+mesh = SubResource("BoxMesh_7mycd")
+
+[node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=2100134086]
+
+[node name="upload" parent="." unique_id=1192600801 instance=ExtResource("5_7mycd")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -7.059, 3.204)
