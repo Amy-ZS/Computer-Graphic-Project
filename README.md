@@ -1,10 +1,24 @@
-this is godot project, just use your godot executable to open the project.godot folder in this repo
+Prerequisites
+- Godot 4.6.1 (.NET version) - Download from [godotengine.org](https://godotengine.org/download)
+- .NET SDK 8.0 or later - Download from [dotnet.microsoft.com](https://dotnet.microsoft.com/en-us/download)
 
-To export the exe, go to Project > Export > select your platform > EXPORT
+Installation
+1. Clone this repository:
+2. Open Godot .NET executable
+3. Click "Import" and navigate to the project folder
+4. Select the project.godot file
+5. Wait for .NET integration to load (first time may take a moment)
 
-WASD to fly around
-E to go up
-Q to go down
+Building for Windows
+1. Go to Project → Export
+2. Select Windows Desktop
+3. Click Export Project
+4. Choose destination and filename
+5. The executable will be created with all necessary .dll files
 
-esc to pause and unlock mouse
-f to do render/end render by pausing/unpausing simulation
+Controls
+"WASD" to fly around
+"E" to go up
+"Q" to go down
+"esc" to pause and unlock mouse
+"f" to do render/end render by pausing/unpausing simulation
