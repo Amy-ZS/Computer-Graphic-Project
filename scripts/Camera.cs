@@ -9,30 +9,51 @@ public partial class Camera : Camera3D
     private float x = 0f;
     private float y = 0f;
 
-    public override void _Ready() => Input.MouseMode = Input.MouseModeEnum.Captured;
+    public override void _Ready()
+    {
+        Input.MouseMode = Input.MouseModeEnum.Visible;
+    }
 
-    public override void _Input(InputEvent @event) {
-        if (@event is InputEventMouseMotion mouse && Input.MouseMode == Input.MouseModeEnum.Captured) {
+    public override void _Input(InputEvent @event)
+    {
+        if (@event is InputEventKey keyEvent && keyEvent.Pressed)
+        {
+            if (keyEvent.Keycode == Key.Escape)
+            {
+                if (GameManager.CurrentState == GameManager.GameState.Playing)
+                    ToggleCursor();
+            }
+            else if (keyEvent.Keycode == Key.F)
+            {
+                GameManager.ToggleTime();
+            }
+            else if (keyEvent.Keycode == Key.K)
+            {
+                // 测试结束菜单
+                GameManager.ShowEndMenu();
+            }
+        }
+
+        if (GameManager.CurrentState != GameManager.GameState.Playing)
+            return;
+
+        if (@event is InputEventMouseMotion mouse && Input.MouseMode == Input.MouseModeEnum.Captured)
+        {
             y -= mouse.Relative.X * sens;
             x -= mouse.Relative.Y * sens;
             x = Mathf.Clamp(x, -90f, 90f);
 
             RotationDegrees = new Vector3(x, y, 0);
         }
-
-        if (@event is InputEventKey keyEvent && keyEvent.Pressed) {
-            if(keyEvent.Keycode == Key.Escape) {
-                ToggleCursor();
-            } else if (keyEvent.Keycode == Key.F) {
-                GD.Print("hi");
-                GameManager.ToggleTime();
-            }
-        }
     }
 
     public override void _Process(double delta)
     {
-        if (Input.MouseMode != Input.MouseModeEnum.Captured) return;
+        if (GameManager.CurrentState != GameManager.GameState.Playing)
+            return;
+
+        if (Input.MouseMode != Input.MouseModeEnum.Captured)
+            return;
 
         Vector3 moveDirection = Vector3.Zero;
 
@@ -43,15 +64,15 @@ public partial class Camera : Camera3D
         if (Input.IsKeyPressed(Key.E)) moveDirection += Vector3.Up;
         if (Input.IsKeyPressed(Key.Q)) moveDirection += Vector3.Down;
 
-        if (moveDirection.Length() > 0) Position += moveDirection.Normalized() * speed * (float)delta;
+        if (moveDirection.Length() > 0)
+            Position += moveDirection.Normalized() * speed * (float)delta;
     }
 
     private void ToggleCursor()
     {
-        if (Input.MouseMode == Input.MouseModeEnum.Captured) {
-			Input.MouseMode = Input.MouseModeEnum.Visible;
-		} else {
+        if (Input.MouseMode == Input.MouseModeEnum.Captured)
+            Input.MouseMode = Input.MouseModeEnum.Visible;
+        else
             Input.MouseMode = Input.MouseModeEnum.Captured;
-		}
     }
 }
