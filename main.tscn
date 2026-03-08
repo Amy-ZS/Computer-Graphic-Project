@@ -5,8 +5,12 @@
 [ext_resource type="Shader" uid="uid://x7srn7pkj6fa" path="res://scripts/water.gdshader" id="3_lquwl"]
 [ext_resource type="Script" uid="uid://byumstshjpmwo" path="res://scripts/GameManager.cs" id="4_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://1vjo7g7oqt16" path="res://assets/models/forest_bd33730e-d58e-45f2-b102-19d02f8ddbe3/forest_2K_9cc666dc-d51e-4968-a5b7-472ff3f64205.blend" id="5_7mycd"]
+<<<<<<< HEAD
 [ext_resource type="CompressedTexture3D" uid="uid://drtixuiux4f8f" path="res://main.GPUParticlesCollisionSDF3D_data.exr" id="5_lquwl"]
 [ext_resource type="Script" uid="uid://bby310wbiugau" path="res://scripts/MenuUI.cs" id="6_7mycd"]
+=======
+[ext_resource type="CompressedTexture3D" uid="uid://c8e2e6pd30a15" path="res://main.GPUParticlesCollisionSDF3D_data.exr" id="5_lquwl"]
+>>>>>>> 373465ce9f0711d142a6dbb246b5e5dab5554b57
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1bvp3"]
 albedo_color = Color(0.26666668, 0.38431373, 1, 1)
@@ -55,12 +59,19 @@ multimesh = SubResource("MultiMesh_h2yge")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=281573487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 54.888943)
 
+<<<<<<< HEAD
 [node name="GameManager" type="Node3D" parent="." unique_id=1502950226 node_paths=PackedStringArray("uiLayer")]
 script = ExtResource("4_1bvp3")
 uiLayer = NodePath("../UI")
 
 [node name="GPUParticlesCollisionSDF3D" type="GPUParticlesCollisionSDF3D" parent="." unique_id=1602202659]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4795575, 2.1185107, 0)
+=======
+[node name="GameManager" type="Node3D" parent="." unique_id=1502950226]
+script = ExtResource("4_1bvp3")
+
+[node name="GPUParticlesCollisionSDF3D" type="GPUParticlesCollisionSDF3D" parent="." unique_id=1602202659]
+>>>>>>> 373465ce9f0711d142a6dbb246b5e5dab5554b57
 size = Vector3(10, 10, 10)
 resolution = 3
 thickness = 2.0
@@ -103,6 +114,7 @@ mesh = SubResource("BoxMesh_7mycd")
 
 [node name="upload" parent="." unique_id=1192600801 instance=ExtResource("5_7mycd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -7.059, 3.204)
+<<<<<<< HEAD
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=76463660]
 script = ExtResource("6_7mycd")
@@ -167,3 +179,5 @@ text = "Restart"
 [node name="QuitButton" type="Button" parent="UI/EndMenu/Panel/VBoxContainer" unique_id=500946253]
 layout_mode = 2
 text = "Quit"
+=======
+>>>>>>> 373465ce9f0711d142a6dbb246b5e5dab5554b57
