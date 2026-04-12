@@ -36,7 +36,7 @@ The shader is not a separate tech demo — it is **fully integrated** into the c
 | **Toggle View (F key)** | Pressing F freezes the simulation and renders a marching cubes mesh from particle data |
 
 
-### New Features Since Alpha Build
+## New Features Since Alpha Build
 
 **Core Simulation**
 
@@ -59,7 +59,7 @@ The shader is not a separate tech demo — it is **fully integrated** into the c
 - **CSGBox3D environment objects for collision
 - **Skybox improvements
 
-### Known Issues
+## Known Issues
 | Issue | Details |
 |-------------------|-------------|
 | **Particle count limited to 5,000** | Performance constraint; stable at this count but could be higher with optimization |
