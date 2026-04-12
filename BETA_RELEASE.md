@@ -36,4 +36,32 @@ The shader is not a separate tech demo — it is **fully integrated** into the c
 | **Toggle View (F key)** | Pressing F freezes the simulation and renders a marching cubes mesh from particle data |
 
 
-### Shader Features
+### New Features Since Alpha Build
+
+**Core Simulation**
+
+- **GPU compute shader implementation (moved physics from CPU to GPU)
+- **SDF collision detection (fixed "really bad collisions" from Alpha)
+- **Particle count increased from ~2,000 to 5,000+ stable
+- **Fixed memory leaks in particle system
+- **Removed gray/blue screen random rendering bug
+- **Visual & Shader (Secondary Pillar)
+- **Toggle between particle view and mesh render (F key)
+
+**Game Loop & UI**
+
+- **Complete game loop (Start Menu → Playing → End Menu)
+- **Main menu with Start and Quit buttons
+
+**Environment & Assets**
+
+- **HDR backgrounds
+- **CSGBox3D environment objects for collision
+- **Skybox improvements
+
+### Known Issues
+| Issue | Details |
+|-------------------|-------------|
+| **Particle count limited to 5,000** | Performance constraint; stable at this count but could be higher with optimization |
+| **SDF uses bounding spheres** | Not precise mesh collision, but acceptable for fluid simulation purposes |
+| **Marching cubes mesh artifacts** | Mesh generation from particle data has minor visual glitches; particle view works correctly |
