@@ -41,8 +41,6 @@ public partial class GameManager : Node3D
 
     public static void StartGame()
     {
-        if (Instance == null) return;
-
         CurrentState = GameState.Playing;
         time_stop = false;
         Instance.elapsed = 0.0f;
@@ -53,8 +51,6 @@ public partial class GameManager : Node3D
 
     public static void ShowStartMenu()
     {
-        if (Instance == null) return;
-
         CurrentState = GameState.StartMenu;
         time_stop = true;
         Input.MouseMode = Input.MouseModeEnum.Visible;
@@ -64,8 +60,6 @@ public partial class GameManager : Node3D
 
     public static void ShowEndMenu()
     {
-        if (Instance == null) return;
-
         CurrentState = GameState.EndMenu;
         time_stop = true;
         Input.MouseMode = Input.MouseModeEnum.Visible;
@@ -73,17 +67,8 @@ public partial class GameManager : Node3D
         Instance.SetMenuVisibility(false, true);
     }
 
-    public static void RestartGame()
-    {
-        if (Instance == null) return;
-        Instance.GetTree().ReloadCurrentScene();
-    }
-
-    public static void QuitGame()
-    {
-        if (Instance == null) return;
-        Instance.GetTree().Quit();
-    }
+    public static void RestartGame() { Instance.GetTree().ReloadCurrentScene(); }
+    public static void QuitGame() { Instance.GetTree().Quit(); }
 
     public static void ToggleTime()
     {
@@ -93,8 +78,6 @@ public partial class GameManager : Node3D
 
     private void SetMenuVisibility(bool showStart, bool showEnd)
     {
-        if (uiLayer == null) return;
-
         var startMenu = uiLayer.GetNode<Control>("StartMenu");
         var endMenu = uiLayer.GetNode<Control>("EndMenu");
 

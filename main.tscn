@@ -72,8 +72,9 @@ multimesh = SubResource("MultiMesh_h2yge")
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=281573487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 54.888943)
 
-[node name="GameManager" type="Node3D" parent="." unique_id=1502950226]
+[node name="GameManager" type="Node3D" parent="." unique_id=1502950226 node_paths=PackedStringArray("uiLayer")]
 script = ExtResource("4_1bvp3")
+uiLayer = NodePath("../UI")
 
 [node name="GPUParticlesCollisionSDF3D" type="GPUParticlesCollisionSDF3D" parent="." unique_id=1602202659]
 layers = 0
@@ -122,27 +123,94 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="Panel" parent="UI/StartMenu" unique_id=665889303]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/StartMenu" unique_id=1028226184]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_left = 461.0
+offset_top = 364.0
+offset_right = 675.0
+offset_bottom = 457.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/StartMenu/Panel" unique_id=1028226184]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="TitleLabel" type="Label" parent="UI/StartMenu/Panel/VBoxContainer" unique_id=964191999]
-layout_mode = 2
-text = "Fluid Simulation Experience"
-
-[node name="StartButton" type="Button" parent="UI/StartMenu/Panel/VBoxContainer" unique_id=1333115883]
+[node name="StartButton" type="Button" parent="UI/StartMenu/VBoxContainer" unique_id=1333115883]
 layout_mode = 2
 text = "Start"
 
-[node name="QuitButton" type="Button" parent="UI/StartMenu/Panel/VBoxContainer" unique_id=1095838778]
+[node name="QuitButton" type="Button" parent="UI/StartMenu/VBoxContainer" unique_id=1095838778]
 layout_mode = 2
 text = "Quit"
+
+[node name="TitleLabel" type="Label" parent="UI/StartMenu" unique_id=964191999]
+layout_mode = 0
+offset_left = 468.0
+offset_top = 236.0
+offset_right = 682.0
+offset_bottom = 259.0
+text = "Fluid Simulation Experience"
+
+[node name="VBoxContainer2" type="VBoxContainer" parent="UI/StartMenu" unique_id=1144545283]
+layout_mode = 0
+offset_left = 826.0
+offset_top = 225.0
+offset_right = 976.0
+offset_bottom = 361.0
+
+[node name="LineEdit" type="LineEdit" parent="UI/StartMenu/VBoxContainer2" unique_id=209016251]
+layout_mode = 2
+placeholder_text = "radius"
+
+[node name="LineEdit2" type="LineEdit" parent="UI/StartMenu/VBoxContainer2" unique_id=2012986250]
+layout_mode = 2
+placeholder_text = "target density"
+
+[node name="LineEdit3" type="LineEdit" parent="UI/StartMenu/VBoxContainer2" unique_id=289716167]
+layout_mode = 2
+placeholder_text = "pressure"
+
+[node name="LineEdit4" type="LineEdit" parent="UI/StartMenu/VBoxContainer2" unique_id=1554984592]
+layout_mode = 2
+placeholder_text = "velocity"
+
+[node name="VBoxContainer3" type="VBoxContainer" parent="UI/StartMenu" unique_id=980278576]
+layout_mode = 0
+offset_left = 983.0
+offset_top = 193.0
+offset_right = 1083.0
+offset_bottom = 393.0
+scale = Vector2(1.25, 1.25)
+
+[node name="Label" type="Label" parent="UI/StartMenu/VBoxContainer3" unique_id=834948042]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "default"
+
+[node name="Label2" type="Label" parent="UI/StartMenu/VBoxContainer3" unique_id=2031327283]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "1"
+
+[node name="Label3" type="Label" parent="UI/StartMenu/VBoxContainer3" unique_id=1066887816]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "2"
+
+[node name="Label4" type="Label" parent="UI/StartMenu/VBoxContainer3" unique_id=1459445045]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = "20"
+
+[node name="Label5" type="Label" parent="UI/StartMenu/VBoxContainer3" unique_id=1634231040]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 2
+text = ".8"
 
 [node name="EndMenu" type="Control" parent="UI" unique_id=1540849300]
 visible = false
@@ -153,25 +221,20 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="Panel" parent="UI/EndMenu" unique_id=696472429]
+[node name="VBoxContainer" type="VBoxContainer" parent="UI/EndMenu" unique_id=690354890]
 layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+offset_right = 162.0
+offset_bottom = 93.0
 
-[node name="VBoxContainer" type="VBoxContainer" parent="UI/EndMenu/Panel" unique_id=690354890]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="EndLabel" type="Label" parent="UI/EndMenu/Panel/VBoxContainer" unique_id=450242051]
+[node name="EndLabel" type="Label" parent="UI/EndMenu/VBoxContainer" unique_id=450242051]
 layout_mode = 2
 text = "Simulation Complete"
 
-[node name="RestartButton" type="Button" parent="UI/EndMenu/Panel/VBoxContainer" unique_id=316633165]
+[node name="RestartButton" type="Button" parent="UI/EndMenu/VBoxContainer" unique_id=316633165]
 layout_mode = 2
 text = "Restart"
 
-[node name="QuitButton" type="Button" parent="UI/EndMenu/Panel/VBoxContainer" unique_id=500946253]
+[node name="QuitButton" type="Button" parent="UI/EndMenu/VBoxContainer" unique_id=500946253]
 layout_mode = 2
 text = "Quit"
 
