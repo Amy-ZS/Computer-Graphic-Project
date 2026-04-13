@@ -1,67 +1,21 @@
-# Beta Release Notes - GPU Fluid Simulation
+#  Assignment 5
 
-**Assignment 5: Beta Build** | **Computer Graphics** | **April 2026**
+Our second pillar, which is the rendering, has already been implemented. We still only have the render for the fluids but we are close to getting one for the world.
 
----
+We are also in the process of making our UI look better by using Godot's built in components.
 
-## Quick Review: First Pillar
+## Our main problem
 
-**GPU-Accelerated SPH Fluid Simulation**
+Our collisions are not really working with the environment yet and only works in a bounding box.
 
-My primary technical pillar is a real-time Smoothed Particle Hydrodynamics (SPH) fluid simulation running entirely on GPU compute shaders. Key achievements:
+If I make water bounce less on a surface and the fps drops even a little bit, the particles just phase through the floor.
 
-- **5,000+ particles** simulated simultaneously at 55-60 FPS
-- **Compute shader architecture** with 64-thread local work groups
-- **SPH physics forces**: Pressure, viscosity, gravity, and damping
-- **SDF collision detection** using 3D textures (64³ resolution)
-- **Complete game loop**: Start Menu → Active Simulation → End Menu
+I have tried making the distance between the particle and the collision hitbox higher and that seems to work. However, that causes the water to float above objects, making it very unrealistic.
 
-The simulation runs in `FluidSim.cs`, dispatching compute shaders that update particle positions, velocities, and densities every frame.
+I also tried stopping the bouncing completely but even if the water particle stops at the floor, the next iteration would put it below the floor because of gravity.
 
----
+If I keep the bouncing high, it looks less and less realistic because of the jittery-ness. And even with it, some water particles still find a way to phase through the floor. I am doing this fluid simulation in a compute shader to make it go faster so its also very hard to transfer this texture information.
 
-## Secondary Pillar Integration
+## Stability
 
-**Custom Water Surface Shader**
-
-My second pillar is a **shader** that provides visual cohesion for the fluid simulation.
-
-### How It Integrates with the Core Loop
-
-The shader is not a separate tech demo — it is **fully integrated** into the core experience:
-
-| Integration Point | Description |
-|-------------------|-------------|
-| **Real-time Rendering** | The shader renders the `RenderedWaterMesh` continuously during gameplay |
-| **Toggle View (F key)** | Pressing F freezes the simulation and renders a marching cubes mesh from particle data |
-
-
-## New Features Since Alpha Build
-
-**Core Simulation**
-
-- **GPU compute shader implementation (moved physics from CPU to GPU)
-- **SDF collision detection (fixed "really bad collisions" from Alpha)
-- **Particle count increased from ~2,000 to 5,000+ stable
-- **Fixed memory leaks in particle system
-- **Removed gray/blue screen random rendering bug
-- **Visual & Shader (Secondary Pillar)
-- **Toggle between particle view and mesh render (F key)
-
-**Game Loop & UI**
-
-- **Complete game loop (Start Menu → Playing → End Menu)
-- **Main menu with Start and Quit buttons
-
-**Environment & Assets**
-
-- **HDR backgrounds
-- **CSGBox3D environment objects for collision
-- **Skybox improvements
-
-## Known Issues
-| Issue | Details |
-|-------------------|-------------|
-| **Particle count limited to 5,000** | Performance constraint; stable at this count but could be higher with optimization |
-| **SDF uses bounding spheres** | Not precise mesh collision, but acceptable for fluid simulation purposes |
-| **Marching cubes mesh artifacts** | Mesh generation from particle data has minor visual glitches; particle view works correctly |
+The build has gotten a little less optimized since our MVP but that is because we are trying to fix our collisions. However, it can still run 20k+ particles at 60+ fps. We already had the second pillar so it was not an issue keeping it in the constraints.

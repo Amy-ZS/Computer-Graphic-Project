@@ -5,7 +5,7 @@
 [ext_resource type="Shader" uid="uid://x7srn7pkj6fa" path="res://scripts/water.gdshader" id="3_lquwl"]
 [ext_resource type="Script" uid="uid://byumstshjpmwo" path="res://scripts/GameManager.cs" id="4_1bvp3"]
 [ext_resource type="PackedScene" uid="uid://1vjo7g7oqt16" path="res://assets/models/forest_bd33730e-d58e-45f2-b102-19d02f8ddbe3/forest_2K_9cc666dc-d51e-4968-a5b7-472ff3f64205.blend" id="5_7mycd"]
-[ext_resource type="CompressedTexture3D" uid="uid://c8e2e6pd30a15" path="res://main.GPUParticlesCollisionSDF3D_data.exr" id="5_lquwl"]
+[ext_resource type="CompressedTexture3D" uid="uid://bkew8bmyskbxb" path="res://main.GPUParticlesCollisionSDF3D_data.exr" id="5_lquwl"]
 [ext_resource type="Script" uid="uid://bby310wbiugau" path="res://scripts/MenuUI.cs" id="6_7mycd"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_1bvp3"]
@@ -41,6 +41,7 @@ size = Vector3(10, 10, 10)
 [node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("sdf_node", "mesh", "marched_mesh")]
 script = ExtResource("1_lquwl")
 sdf_node = NodePath("GPUParticlesCollisionSDF3D")
+count = 10000
 bounds = Vector3(5, 5, 5)
 mesh = NodePath("FluidMultiMesh")
 marched_mesh = NodePath("SubViewport/RenderedWaterMesh")
@@ -59,7 +60,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 54.888943)
 script = ExtResource("4_1bvp3")
 
 [node name="GPUParticlesCollisionSDF3D" type="GPUParticlesCollisionSDF3D" parent="." unique_id=1602202659]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.4795575, 2.1185107, 0)
+layers = 0
+cull_mask = 4294966272
 size = Vector3(10, 10, 10)
 resolution = 3
 thickness = 2.0
@@ -101,7 +103,8 @@ mesh = SubResource("BoxMesh_7mycd")
 [node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=2100134086]
 
 [node name="upload" parent="." unique_id=1192600801 instance=ExtResource("5_7mycd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -7.059, 3.204)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -4.1476502, 3.204)
+visible = false
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=76463660]
 script = ExtResource("6_7mycd")

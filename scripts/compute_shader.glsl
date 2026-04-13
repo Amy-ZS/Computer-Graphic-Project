@@ -83,42 +83,6 @@ void main() {
     if (abs(next_pos.x) > params.bounds.x) { next_pos.x = sign(next_pos.x) * params.bounds.x; new_vel.x *= -params.damping; }
     if (abs(next_pos.y) > params.bounds.y) { next_pos.y = sign(next_pos.y) * params.bounds.y; new_vel.y *= -params.damping; }
     if (abs(next_pos.z) > params.bounds.z) { next_pos.z = sign(next_pos.z) * params.bounds.z; new_vel.z *= -params.damping; }
-
-    for (int iteration = 0; iteration < 3; iteration++) {
-        vec3 sdf_uv = (next_pos - params.sdf_origin.xyz) / params.sdf_size.xyz + 0.5;
-        if (all(greaterThanEqual(sdf_uv, vec3(0.0))) && all(lessThanEqual(sdf_uv, vec3(1.0)))) {
-            
-            float dist = texture(sdf_tex, sdf_uv).r;
-            float epsilon_dist = 0.15; 
-
-            if (dist < epsilon_dist) {
-                float e = 0.001; 
-                
-                vec3 grad = vec3(
-                    texture(sdf_tex, sdf_uv + vec3(e, 0, 0)).r - texture(sdf_tex, sdf_uv - vec3(e, 0, 0)).r,
-                    texture(sdf_tex, sdf_uv + vec3(0, e, 0)).r - texture(sdf_tex, sdf_uv - vec3(0, e, 0)).r,
-                    texture(sdf_tex, sdf_uv + vec3(0, 0, e)).r - texture(sdf_tex, sdf_uv - vec3(0, 0, e)).r
-                );
-
-                vec3 fallback_normal = normalize(next_pos - params.sdf_origin.xyz);
-                vec3 normal = (length(grad) > 0.0001) ? normalize(grad) : fallback_normal;
-
-                float penetration = epsilon_dist - dist;
-                next_pos += normal * (penetration + 0.001);
-
-                if (penetration > 0.0) {
-                    next_pos += normal * (penetration + 0.01);
-                    float vDotN = dot(new_vel, normal);
-                    if (vDotN < 0.0) {
-                        new_vel -= normal * vDotN; 
-                        new_vel *= 0.5; 
-                    }
-                }
-            } else {
-                break; // Outside the collision shell
-            }
-        }
-    }
     
     positions[index] = vec4(next_pos, 0.0);
     velocities[index] = vec4(new_vel, 0.0);
