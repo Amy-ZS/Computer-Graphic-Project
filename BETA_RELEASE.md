@@ -1,5 +1,8 @@
 #  Assignment 5
 
+**Source code:** https://github.com/Amy-ZS/Computer-Graphic-Project
+Import the godot project to godot and export or run it
+
 Our second pillar, which is the rendering, has already been implemented. We still only have the render for the fluids but we are close to getting one for the world.
 
 We are also in the process of making our UI look better by using Godot's built in components.
