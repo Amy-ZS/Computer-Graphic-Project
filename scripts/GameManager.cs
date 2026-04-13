@@ -16,9 +16,6 @@ public partial class GameManager : Node3D
     public static GameState CurrentState = GameState.StartMenu;
 
     [Export] public CanvasLayer uiLayer;
-    [Export] public float autoEndTime = 30.0f;
-
-    private float elapsed = 0.0f;
 
     public override void _Ready()
     {
@@ -26,24 +23,10 @@ public partial class GameManager : Node3D
         ShowStartMenu();
     }
 
-    public override void _Process(double delta)
-    {
-        if (CurrentState == GameState.Playing)
-        {
-            elapsed += (float)delta;
-
-            if (elapsed >= autoEndTime)
-            {
-                ShowEndMenu();
-            }
-        }
-    }
-
     public static void StartGame()
     {
         CurrentState = GameState.Playing;
         time_stop = false;
-        Instance.elapsed = 0.0f;
 
         Input.MouseMode = Input.MouseModeEnum.Captured;
         Instance.SetMenuVisibility(false, false);

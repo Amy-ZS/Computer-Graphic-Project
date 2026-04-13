@@ -16,22 +16,9 @@ material = SubResource("StandardMaterial3D_1bvp3")
 radius = 0.125
 height = 0.25
 
-[sub_resource type="MultiMesh" id="MultiMesh_272bh"]
+[sub_resource type="MultiMesh" id="MultiMesh_5vw27"]
 transform_format = 1
-use_colors = true
 mesh = SubResource("SphereMesh_1bvp3")
-
-[sub_resource type="SphereMesh" id="SphereMesh_5vw27"]
-radius = 0.125
-height = 0.25
-
-[sub_resource type="MultiMesh" id="MultiMesh_h2yge"]
-transform_format = 1
-use_colors = true
-mesh = SubResource("SphereMesh_5vw27")
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lquwl"]
-albedo_color = Color(1, 0.1882353, 1, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_7mycd"]
 albedo_color = Color(0.22352941, 0.41960785, 0.14117648, 1)
@@ -48,26 +35,33 @@ shader_parameter/water_color = Color(0.1, 0.4, 0.8, 1)
 material = SubResource("ShaderMaterial_lquwl")
 size = Vector3(10, 10, 10)
 
+[sub_resource type="SphereMesh" id="SphereMesh_272bh"]
+radius = 0.125
+height = 0.25
+
+[sub_resource type="MultiMesh" id="MultiMesh_272bh"]
+transform_format = 1
+mesh = SubResource("SphereMesh_272bh")
+
 [node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("sdf_node", "mesh", "static_mesh", "marched_mesh")]
 script = ExtResource("1_lquwl")
 sdf_node = NodePath("GPUParticlesCollisionSDF3D")
 count = 10000
-surface_particle_count = 20000
-bounds = Vector3(5, 5, 5)
+surface_particle_count = 50000
+bounds = Vector3(4, 5, 4)
+target_density = 4.0
+pressure = 10.0
 mesh = NodePath("FluidMultiMesh")
-static_mesh = NodePath("StaticFluidMesh")
+static_mesh = NodePath("MultiMeshInstance3D")
 marched_mesh = NodePath("RenderedWaterMesh")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1907102811]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 11.588665)
 script = ExtResource("2_0xm2m")
 
 [node name="FluidMultiMesh" type="MultiMeshInstance3D" parent="." unique_id=913744954]
 extra_cull_margin = 100.0
-multimesh = SubResource("MultiMesh_272bh")
-
-[node name="StaticFluidMesh" type="MultiMeshInstance3D" parent="." unique_id=1626880993]
-extra_cull_margin = 100.0
-multimesh = SubResource("MultiMesh_h2yge")
+multimesh = SubResource("MultiMesh_5vw27")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=281573487]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 54.888943)
@@ -79,17 +73,10 @@ uiLayer = NodePath("../UI")
 [node name="GPUParticlesCollisionSDF3D" type="GPUParticlesCollisionSDF3D" parent="." unique_id=1602202659]
 layers = 0
 cull_mask = 4294966272
-size = Vector3(10, 10, 10)
+size = Vector3(11, 11, 11)
 resolution = 3
+thickness = 2.0
 texture = ExtResource("5_lquwl")
-
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=221158971]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.2942799, -4.509808, 0)
-
-[node name="CSGBox3D5" type="CSGBox3D" parent="." unique_id=545748371]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.1467495, -7.7725997, 5.100005)
-size = Vector3(6, 1, 6)
-material = SubResource("StandardMaterial3D_lquwl")
 
 [node name="CSGBox3D2" type="CSGBox3D" parent="." unique_id=1353093458]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0651499, -2.182561, -2.1626067)
@@ -100,14 +87,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8227895, -2.182561, -7.667
 size = Vector3(6.775879, 5.7197266, 1)
 material = SubResource("StandardMaterial3D_7mycd")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="." unique_id=1340003387]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8772298, -6.267573, -2.1626067)
-
-[node name="CSGBox3D3" type="CSGBox3D" parent="." unique_id=1058118032]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0651499, -4.542424, 0)
-
 [node name="CSGSphere3D" type="CSGSphere3D" parent="." unique_id=1647149648]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.4096603, 2.2647934)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.48615646, 2.2647934)
 
 [node name="upload" parent="." unique_id=1192600801 instance=ExtResource("5_7mycd")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -3.6648114, 3.204)
@@ -241,3 +222,6 @@ text = "Quit"
 [node name="RenderedWaterMesh" type="MeshInstance3D" parent="." unique_id=806546337]
 layers = 4
 mesh = SubResource("BoxMesh_7mycd")
+
+[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="." unique_id=878305463]
+multimesh = SubResource("MultiMesh_272bh")

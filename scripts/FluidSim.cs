@@ -50,21 +50,28 @@ public partial class FluidSim : Node3D
 
 		//particles on surfaces
 		int res = 128;
-		float threshold = 0.06f; 
-		int step = 2; 
+		int voidZone = 10;
+		float threshold = 0.08f;
+		int step = 3;
 
-		for (int z = 2; z < res - 2; z += step) {
-			for (int y = 2; y < res - 2; y += step) {
-				for (int x = 2; x < res - 2; x += step) {
-					float sdfVal = slices[z].GetPixel(x, y).R;
-					if (Mathf.Abs(sdfVal) < threshold) {
-						float neighborVal = slices[z].GetPixel(x + 1, y).R;
-						if (Mathf.Abs(sdfVal - neighborVal) > 0.0001f) {
+		for (int z = voidZone; z < res - voidZone; z+=step) {
+			for (int y = voidZone; y < res - voidZone; y+=step) {
+				for (int x = voidZone; x < res - voidZone; x+=step) {
+					
+					float val = slices[z].GetPixel(x, y).R;
+					
+					if (Mathf.Abs(val) < threshold) {
+						float nx = slices[z].GetPixel(x + 1, y).R;
+						float ny = slices[z].GetPixel(x, y + 1).R;
+						if (Mathf.Abs(val - nx) > 0.001f || Mathf.Abs(val - ny) > 0.001f) {
+							
 							Vector3 uvw = new Vector3(x, y, z) / (res - 1f);
 							Vector3 world = sdf_node.GlobalPosition + (uvw - Vector3.One * 0.5f) * sdf_node.Size;
+							
 							surface_points.Add(world);
 						}
 					}
+
 					if (surface_points.Count >= surface_particle_count) break;
 				}
 				if (surface_points.Count >= surface_particle_count) break;
@@ -77,7 +84,7 @@ public partial class FluidSim : Node3D
 		float spacing = 2;
 		for (int i = 0; i < count; i++) {
 			starting_positions[i*4] = (float)GD.RandRange(-spacing, spacing);
-			starting_positions[i*4 + 1] = (float)GD.RandRange(-spacing, spacing);
+			starting_positions[i*4 + 1] = (float)GD.RandRange(-spacing, spacing)+100;
 			starting_positions[i*4 + 2] = (float)GD.RandRange(-spacing, spacing);
 			starting_positions[i*4 + 3] = 0.0f;
 		}
@@ -130,7 +137,7 @@ public partial class FluidSim : Node3D
 		uniform_set = rendering_device.UniformSetCreate(new Godot.Collections.Array<RDUniform> { bind0, bind1, bind2, bind3 }, shader, 0);
 
 		mesh.Multimesh.InstanceCount = count;
-		static_mesh.Multimesh.InstanceCount = surface_particle_count;
+		static_mesh.Multimesh.InstanceCount = surface_points.Count;
 		for (int i = 0; i < surface_points.Count; i++) {
 			static_mesh.Multimesh.SetInstanceTransform(i, new Transform3D(Basis.Identity, surface_points[i]));
 		}

@@ -42,7 +42,13 @@ void main() {
     //i will be using a grid (spacial hashing) in the future but we dont one for mvp
     for (int i = 0; i < int(params.particle_count); i++) {
         float dist = distance(positions[i].xyz, pos);
-        density += SmoothingKernel(params.radius, max(dist, 0.0001));
+        float influence = SmoothingKernel(params.radius, max(dist, 0.0001));
+
+        if (positions[i].w == 1.0) {
+            density += influence * 2.0;
+        } else {
+            density += influence;
+        }
     }
     densities[index] = density;
 
@@ -50,7 +56,7 @@ void main() {
 
     // calculate forces
     float pressure = (density-params.target_density) * params.pressure_multiplier;
-    vec3 force = vec3(0.0, -9.8, 0.0);
+    vec3 force = vec3(0.0, -2, 0.0);
 
     for (int i = 0; i < int(params.particle_count); i++) {
         if (i == int(index)) continue;
