@@ -46,6 +46,8 @@ void main() {
     }
     densities[index] = density;
 
+    if (positions[index].w == 1.0) return;
+
     // calculate forces
     float pressure = (density-params.target_density) * params.pressure_multiplier;
     vec3 force = vec3(0.0, -9.8, 0.0);

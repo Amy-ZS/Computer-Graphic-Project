@@ -16,9 +16,19 @@ material = SubResource("StandardMaterial3D_1bvp3")
 radius = 0.125
 height = 0.25
 
+[sub_resource type="MultiMesh" id="MultiMesh_272bh"]
+transform_format = 1
+use_colors = true
+mesh = SubResource("SphereMesh_1bvp3")
+
+[sub_resource type="SphereMesh" id="SphereMesh_5vw27"]
+radius = 0.125
+height = 0.25
+
 [sub_resource type="MultiMesh" id="MultiMesh_h2yge"]
 transform_format = 1
-mesh = SubResource("SphereMesh_1bvp3")
+use_colors = true
+mesh = SubResource("SphereMesh_5vw27")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lquwl"]
 albedo_color = Color(1, 0.1882353, 1, 1)
@@ -38,18 +48,24 @@ shader_parameter/water_color = Color(0.1, 0.4, 0.8, 1)
 material = SubResource("ShaderMaterial_lquwl")
 size = Vector3(10, 10, 10)
 
-[node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("sdf_node", "mesh", "marched_mesh")]
+[node name="Main" type="Node3D" unique_id=1016063349 node_paths=PackedStringArray("sdf_node", "mesh", "static_mesh", "marched_mesh")]
 script = ExtResource("1_lquwl")
 sdf_node = NodePath("GPUParticlesCollisionSDF3D")
 count = 10000
+surface_particle_count = 20000
 bounds = Vector3(5, 5, 5)
 mesh = NodePath("FluidMultiMesh")
-marched_mesh = NodePath("SubViewport/RenderedWaterMesh")
+static_mesh = NodePath("StaticFluidMesh")
+marched_mesh = NodePath("RenderedWaterMesh")
 
 [node name="Camera3D" type="Camera3D" parent="." unique_id=1907102811]
 script = ExtResource("2_0xm2m")
 
 [node name="FluidMultiMesh" type="MultiMeshInstance3D" parent="." unique_id=913744954]
+extra_cull_margin = 100.0
+multimesh = SubResource("MultiMesh_272bh")
+
+[node name="StaticFluidMesh" type="MultiMeshInstance3D" parent="." unique_id=1626880993]
 extra_cull_margin = 100.0
 multimesh = SubResource("MultiMesh_h2yge")
 
@@ -64,7 +80,6 @@ layers = 0
 cull_mask = 4294966272
 size = Vector3(10, 10, 10)
 resolution = 3
-thickness = 2.0
 texture = ExtResource("5_lquwl")
 
 [node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=221158971]
@@ -80,7 +95,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0651499, -2.182561, -2.1626
 size = Vector3(1, 5.7197266, 1)
 
 [node name="CSGBox3D6" type="CSGBox3D" parent="." unique_id=11703221]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8227895, -2.182561, -5.526724)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.8227895, -2.182561, -7.667617)
 size = Vector3(6.775879, 5.7197266, 1)
 material = SubResource("StandardMaterial3D_7mycd")
 
@@ -93,18 +108,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.0651499, -4.542424, 0)
 [node name="CSGSphere3D" type="CSGSphere3D" parent="." unique_id=1647149648]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -4.4096603, 2.2647934)
 
-[node name="SubViewport" type="SubViewport" parent="." unique_id=576479751]
-render_target_update_mode = 1
-
-[node name="RenderedWaterMesh" type="MeshInstance3D" parent="SubViewport" unique_id=806546337]
-layers = 4
-mesh = SubResource("BoxMesh_7mycd")
-
-[node name="Camera3D" type="Camera3D" parent="SubViewport" unique_id=2100134086]
-
 [node name="upload" parent="." unique_id=1192600801 instance=ExtResource("5_7mycd")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -4.1476502, 3.204)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.708, -3.6648114, 3.204)
 
 [node name="UI" type="CanvasLayer" parent="." unique_id=76463660]
 script = ExtResource("6_7mycd")
@@ -169,3 +174,7 @@ text = "Restart"
 [node name="QuitButton" type="Button" parent="UI/EndMenu/Panel/VBoxContainer" unique_id=500946253]
 layout_mode = 2
 text = "Quit"
+
+[node name="RenderedWaterMesh" type="MeshInstance3D" parent="." unique_id=806546337]
+layers = 4
+mesh = SubResource("BoxMesh_7mycd")

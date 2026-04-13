@@ -1,9 +1,7 @@
 using Godot;
 using System;
-using System.Net;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Transactions;
 
 public partial class FluidSim : Node3D
 {
@@ -19,6 +17,7 @@ public partial class FluidSim : Node3D
 	private Rid pipeline;
 
 	[Export] public int count = 5000;
+	[Export] public int surface_particle_count = 10000;
 	[Export] public Vector3 bounds = new(50, 50, 50);
 
 	[Export] public float radius = 1f;
@@ -26,6 +25,7 @@ public partial class FluidSim : Node3D
 	[Export] public float pressure = 20f;
 	[Export] public float viscosity = .8f;
 	[Export] public MultiMeshInstance3D mesh;
+	[Export] public MultiMeshInstance3D static_mesh;
 	[Export] public MeshInstance3D marched_mesh;
 
 	private Rid pos_buffer;
@@ -34,8 +34,10 @@ public partial class FluidSim : Node3D
 	
 	private Rid uniform_set;
 	private bool last_frame_stopped;
+	private int total_count;
 
 	public override async void _Ready() {
+		total_count = count + surface_particle_count;
 		last_frame_stopped = true;
 		rendering_device = RenderingServer.CreateLocalRenderingDevice();
 
@@ -43,10 +45,36 @@ public partial class FluidSim : Node3D
 		shader = rendering_device.ShaderCreateFromSpirV(shaderFile.GetSpirV());
 		pipeline = rendering_device.ComputePipelineCreate(shader);
 
+		Godot.Collections.Array<Image> slices = RenderingServer.Texture3DGet(sdf_node.Texture.GetRid());
+		List<Vector3> surface_points = new List<Vector3>();
 
-		float[] starting_positions = new float[count * 4];
+		//particles on surfaces
+		int res = 128;
+		float threshold = 0.06f; 
+		int step = 2; 
+
+		for (int z = 2; z < res - 2; z += step) {
+			for (int y = 2; y < res - 2; y += step) {
+				for (int x = 2; x < res - 2; x += step) {
+					float sdfVal = slices[z].GetPixel(x, y).R;
+					if (Mathf.Abs(sdfVal) < threshold) {
+						float neighborVal = slices[z].GetPixel(x + 1, y).R;
+						if (Mathf.Abs(sdfVal - neighborVal) > 0.0001f) {
+							Vector3 uvw = new Vector3(x, y, z) / (res - 1f);
+							Vector3 world = sdf_node.GlobalPosition + (uvw - Vector3.One * 0.5f) * sdf_node.Size;
+							surface_points.Add(world);
+						}
+					}
+					if (surface_points.Count >= surface_particle_count) break;
+				}
+				if (surface_points.Count >= surface_particle_count) break;
+			}
+			if (surface_points.Count >= surface_particle_count) break;
+		}
+
+		float[] starting_positions = new float[total_count * 4];
+
 		float spacing = 2;
-
 		for (int i = 0; i < count; i++) {
 			starting_positions[i*4] = (float)GD.RandRange(-spacing, spacing);
 			starting_positions[i*4 + 1] = (float)GD.RandRange(-spacing, spacing);
@@ -54,15 +82,24 @@ public partial class FluidSim : Node3D
 			starting_positions[i*4 + 3] = 0.0f;
 		}
 
+		for (int i = 0; i < surface_particle_count; i++) {
+			Vector3 p = surface_points[i % surface_points.Count];
+			int idx = (count + i) * 4;
+			starting_positions[idx]     = p.X;
+			starting_positions[idx + 1] = p.Y;
+			starting_positions[idx + 2] = p.Z;
+			starting_positions[idx + 3] = 1.0f;
+		}
+
+
 		byte[] starting_positions_bytes = MemoryMarshal.AsBytes(starting_positions.AsSpan()).ToArray();
 
-		Godot.Collections.Array<Image> slices = RenderingServer.Texture3DGet(sdf_node.Texture.GetRid());
 		int sliceSize = slices[0].GetData().Length;
 		byte[] allData = new byte[sliceSize * slices.Count];
 
 		for (int i = 0; i < slices.Count; i++) {
 			byte[] sliceBytes = slices[i].GetData();
-			System.Buffer.BlockCopy(sliceBytes, 0, allData, i * sliceSize, sliceSize);
+			Buffer.BlockCopy(sliceBytes, 0, allData, i * sliceSize, sliceSize);
 		}
 
 		RDTextureFormat tf = new RDTextureFormat {
@@ -79,9 +116,9 @@ public partial class FluidSim : Node3D
 		RDSamplerState samplerState = new RDSamplerState();
 		Rid sampler_rid = rendering_device.SamplerCreate(samplerState);
 	
-		pos_buffer = rendering_device.StorageBufferCreate((uint)count*16, starting_positions_bytes); // 4 floats
-		vel_buffer = rendering_device.StorageBufferCreate((uint)(count*16)); // 4 floats
-		den_buffer = rendering_device.StorageBufferCreate((uint)(count*4)); // 1 float
+		pos_buffer = rendering_device.StorageBufferCreate((uint)total_count*16, starting_positions_bytes); // 4 floats
+		vel_buffer = rendering_device.StorageBufferCreate((uint)(total_count*16)); // 4 floats
+		den_buffer = rendering_device.StorageBufferCreate((uint)(total_count*4)); // 1 float
 
 		RDUniform bind0 = new RDUniform { Binding = 0, UniformType = RenderingDevice.UniformType.StorageBuffer }; bind0.AddId(pos_buffer);
 		RDUniform bind1 = new RDUniform { Binding = 1, UniformType = RenderingDevice.UniformType.StorageBuffer }; bind1.AddId(vel_buffer);
@@ -93,6 +130,10 @@ public partial class FluidSim : Node3D
 		uniform_set = rendering_device.UniformSetCreate(new Godot.Collections.Array<RDUniform> { bind0, bind1, bind2, bind3 }, shader, 0);
 
 		mesh.Multimesh.InstanceCount = count;
+		static_mesh.Multimesh.InstanceCount = surface_particle_count;
+		for (int i = 0; i < surface_points.Count; i++) {
+			static_mesh.Multimesh.SetInstanceTransform(i, new Transform3D(Basis.Identity, surface_points[i]));
+		}
 	}
 
 	public override void _Process(double delta) {
@@ -105,9 +146,12 @@ public partial class FluidSim : Node3D
 				byte[] stopped_bytes = rendering_device.BufferGetData(pos_buffer);
 				float[] pos_floats = MemoryMarshal.Cast<byte, float>(stopped_bytes).ToArray();
 
-				Image img = Image.Create(64, 128, false, Image.Format.Rgbaf); 
+				int img_width = Mathf.CeilToInt(Mathf.Sqrt(count));
+				int img_height = Mathf.CeilToInt((float)count / img_width);
+
+				Image img = Image.Create(img_width, img_height, false, Image.Format.Rgbaf);
 				for (int i = 0; i < count; i++) {
-					img.SetPixel(i % 64, i / 64, new Color(pos_floats[i*4], pos_floats[i*4+1], pos_floats[i*4+2]));
+					img.SetPixel(i % img_width, i / img_width, new Color(pos_floats[i*4], pos_floats[i*4+1], pos_floats[i*4+2]));
 				}
 				
 				var particle_tex = ImageTexture.CreateFromImage(img);
@@ -140,7 +184,7 @@ public partial class FluidSim : Node3D
 	{
 		float[] vals = {
 			radius, //4
-			count, //8
+			total_count, //8
 			dt, //12
 			target_density, //16
 			pressure, //20
@@ -161,7 +205,7 @@ public partial class FluidSim : Node3D
 		rendering_device.ComputeListBindUniformSet(list, uniform_set, 0); //tells the program where to put our info
 		
 		rendering_device.ComputeListSetPushConstant(list, bytes, (uint)bytes.Length);
-		rendering_device.ComputeListDispatch(list, (uint)Mathf.Ceil(count / 64.0f), 1, 1); //separates the processing into groups of 64
+		rendering_device.ComputeListDispatch(list, (uint)Mathf.Ceil(total_count / 64.0f), 1, 1); //separates the processing into groups of 64
 		//we are also doing this in a 1d array
 
 		rendering_device.ComputeListEnd();
