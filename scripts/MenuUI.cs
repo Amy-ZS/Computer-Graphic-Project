@@ -5,10 +5,10 @@ public partial class MenuUI : CanvasLayer
 {
 	public override void _Ready()
 	{
-		GetNode<Button>("StartMenu/VBoxContainer/StartButton").Pressed += GameManager.StartGame;
-		GetNode<Button>("StartMenu/VBoxContainer/QuitButton").Pressed += GameManager.QuitGame;
+		GetNode<Button>("StartMenu/VBoxContainer/StartButton").Pressed += GameManager.Instance.StartGame;
+		GetNode<Button>("StartMenu/VBoxContainer/QuitButton").Pressed += GameManager.Instance.QuitGame;
 
-		GetNode<Button>("EndMenu/VBoxContainer/RestartButton").Pressed += GameManager.RestartGame;
-		GetNode<Button>("EndMenu/VBoxContainer/QuitButton").Pressed += GameManager.QuitGame;
+		GetNode<Button>("EndMenu/VBoxContainer/RestartButton").Pressed += GameManager.Instance.RestartGame;
+		GetNode<Button>("EndMenu/VBoxContainer/QuitButton").Pressed += GameManager.Instance.QuitGame;
 	}
 }

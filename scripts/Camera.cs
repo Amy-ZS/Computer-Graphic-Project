@@ -20,21 +20,21 @@ public partial class Camera : Camera3D
 		{
 			if (keyEvent.Keycode == Key.Escape)
 			{
-				if (GameManager.CurrentState == GameManager.GameState.Playing)
+				if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
 					ToggleCursor();
 			}
 			else if (keyEvent.Keycode == Key.F)
 			{
-				GameManager.ToggleTime();
+				GameManager.Instance.ToggleTime();
 			}
 			else if (keyEvent.Keycode == Key.K)
 			{
 				// 测试结束菜单
-				GameManager.ShowEndMenu();
+				GameManager.Instance.ShowEndMenu();
 			}
 		}
 
-		if (GameManager.CurrentState != GameManager.GameState.Playing)
+		if (GameManager.Instance.CurrentState != GameManager.GameState.Playing)
 			return;
 
 		if (@event is InputEventMouseMotion mouse && Input.MouseMode == Input.MouseModeEnum.Captured)
@@ -49,7 +49,7 @@ public partial class Camera : Camera3D
 
 	public override void _Process(double delta)
 	{
-		if (GameManager.CurrentState != GameManager.GameState.Playing)
+		if (GameManager.Instance.CurrentState != GameManager.GameState.Playing)
 			return;
 
 		if (Input.MouseMode != Input.MouseModeEnum.Captured)

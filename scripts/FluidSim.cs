@@ -12,12 +12,14 @@ public partial class FluidSim : Node3D
 	//we can base the sim off the equations there	
 	[Export] public GpuParticlesCollisionSdf3D sdf_node;
 
+	public static FluidSim Instance;
 	private RenderingDevice rendering_device;
 	private Rid shader;
 	private Rid pipeline;
 
 	[Export] public int count = 5000;
 	[Export] public int surface_particle_count = 10000;
+	[Export] public int surface_particle_step = 3;
 	[Export] public Vector3 bounds = new(50, 50, 50);
 
 	[Export] public float radius = 1f;
@@ -27,16 +29,22 @@ public partial class FluidSim : Node3D
 	[Export] public MultiMeshInstance3D mesh;
 	[Export] public MultiMeshInstance3D static_mesh;
 	[Export] public MeshInstance3D marched_mesh;
+	[Export] public Node3D forest;
 
 	private Rid pos_buffer;
 	private Rid vel_buffer;
 	private Rid den_buffer;
 	
 	private Rid uniform_set;
-	private bool last_frame_stopped;
+	private bool last_frame_stopped = true;
 	private int total_count;
 
-	public override async void _Ready() {
+	public override void _Ready() {
+		Instance = this;
+	}
+
+	public void START() {
+		forest.Visible = true;
 		total_count = count + surface_particle_count;
 		last_frame_stopped = true;
 		rendering_device = RenderingServer.CreateLocalRenderingDevice();
@@ -52,11 +60,10 @@ public partial class FluidSim : Node3D
 		int res = 128;
 		int voidZone = 10;
 		float threshold = 0.08f;
-		int step = 3;
 
-		for (int z = voidZone; z < res - voidZone; z+=step) {
-			for (int y = voidZone; y < res - voidZone; y+=step) {
-				for (int x = voidZone; x < res - voidZone; x+=step) {
+		for (int z = voidZone; z < res - voidZone; z+=surface_particle_step) {
+			for (int y = voidZone; y < res - voidZone; y+=surface_particle_step) {
+				for (int x = voidZone; x < res - voidZone; x+=surface_particle_step) {
 					
 					float val = slices[z].GetPixel(x, y).R;
 					
@@ -144,7 +151,7 @@ public partial class FluidSim : Node3D
 	}
 
 	public override void _Process(double delta) {
-		if(GameManager.time_stop) {
+		if(GameManager.Instance.time_stop) {
 			if (last_frame_stopped) {
 				return;
 			} else {
