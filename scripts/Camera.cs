@@ -27,6 +27,10 @@ public partial class Camera : Camera3D
 			{
 				GameManager.Instance.ToggleTime();
 			}
+			else if (keyEvent.Keycode == Key.R)
+			{
+				GetTree().Root.GetNode<MultiMeshInstance3D>("Main/collision").Visible = !GetTree().Root.GetNode<MultiMeshInstance3D>("Main/collision").Visible;
+			}
 			else if (keyEvent.Keycode == Key.K)
 			{
 				// 测试结束菜单

@@ -50,7 +50,7 @@ bounds = Vector3(4, 5, 4)
 target_density = 4.0
 pressure = 10.0
 mesh = NodePath("FluidMultiMesh")
-static_mesh = NodePath("MultiMeshInstance3D")
+static_mesh = NodePath("collision")
 marched_mesh = NodePath("RenderedWaterMesh")
 forest = NodePath("upload")
 
@@ -332,11 +332,12 @@ offset_right = 178.0
 offset_bottom = 97.0
 text = "f to render/unrender
 esc to unlock mouse
+r to hide collisions
 "
 
 [node name="RenderedWaterMesh" type="MeshInstance3D" parent="." unique_id=806546337]
 layers = 4
 mesh = SubResource("BoxMesh_7mycd")
 
-[node name="MultiMeshInstance3D" type="MultiMeshInstance3D" parent="." unique_id=878305463]
+[node name="collision" type="MultiMeshInstance3D" parent="." unique_id=878305463]
 multimesh = SubResource("MultiMesh_272bh")
