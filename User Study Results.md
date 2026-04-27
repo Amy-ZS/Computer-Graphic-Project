@@ -13,15 +13,15 @@ Since Assignment 5 (Beta), the following features have been implemented to reach
 ### Completed Features
 | Feature | Status | Description |
 |---------|--------|-------------|
-| GPU Compute Shader Physics | ✅ Complete | SPH fluid simulation running entirely on GPU |
-| Particle Collision System | ✅ Complete | Box bounds + SDF environment collision |
-| MultiMesh Particle Rendering | ✅ Complete | 5,000+ particles visible as blue spheres |
-| Marching Cubes Mesh Render | ✅ Complete | Press F to render fluid surface from particles |
-| Complete Game Loop | ✅ Complete | Start → Playing → End |
-| UI Menus | ✅ Complete | Start menu with instructions, End menu with restart |
-| Camera Controls | ✅ Complete | WASD + mouse look, E/Q up/down |
-| Water Surface Shader | ✅ Complete | Animated waves, depth coloring, foam |
-| SDF Environment Collision | ✅ Complete | Particles collide with GPUParticlesCollisionSDF3D |
+| GPU Compute Shader Physics | Complete | SPH fluid simulation running entirely on GPU |
+| Particle Collision System | Complete | Box bounds + SDF environment collision |
+| MultiMesh Particle Rendering | Complete | 5,000+ particles visible as blue spheres |
+| Marching Cubes Mesh Render | Complete | Press F to render fluid surface from particles |
+| Complete Game Loop | Complete | Start → Playing → End |
+| UI Menus | Complete | Start menu with instructions, End menu with restart |
+| Camera Controls | Complete | WASD + mouse look, E/Q up/down |
+| Water Surface Shader | Complete | Animated waves, depth coloring, foam |
+| SDF Environment Collision | Complete | Particles collide with GPUParticlesCollisionSDF3D |
 
 ### Features Cut (Documented)
 - Sound system (deferred to post-final due to time constraints)
@@ -81,34 +81,34 @@ Since Assignment 5 (Beta), the following features have been implemented to reach
 
 Based on playtest data, these are the **3-5 specific changes** to make before final submission:
 
-### 1. ✅ Optimize Marching Cubes Render (Critical)
+### 1. Optimize Marching Cubes Render (Critical)
 **Issue**: Render view drops to <1 FPS even on RTX 4080  
 **Fix**: 
 - Reduce particle count during render mode (5000 → 2000)
 - Implement progressive mesh generation
 - Add loading indicator during render
 
-### 2. ✅ Improve Low-End Device Performance
+### 2. Improve Low-End Device Performance
 **Issue**: Laptops with integrated GPUs freeze or lag  
 **Fix**:
 - Auto-detect GPU capability at startup
 - Provide "Low Quality Mode" option in menu
 - Reduce particle count for low-end devices (5000 → 2000)
 
-### 3. ✅ Rename Executable File
+### 3. Rename Executable File
 **Issue**: "fluid.exe" not obvious to users  
 **Fix**:
 - Rename to `FluidSimulation.exe` or `Start.exe`
 - Update export settings
 
-### 4. ✅ Fix Floor Collision on Low FPS
+### 4. Fix Floor Collision on Low FPS
 **Issue**: Particles phase through floor when FPS drops  
 **Fix**:
 - Implement delta-time independent collision
 - Add safety margin for collision detection
 - Use raycasting fallback for high velocities
 
-### 5. ✅ Add Performance Settings Menu (New)
+### 5. Add Performance Settings Menu (New)
 **Action**: Add settings toggles for:
 - Particle count slider (1000 - 5000)
 - Shadow quality
