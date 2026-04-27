@@ -3,7 +3,6 @@
 **Project**: GPU Fluid Simulation  
 **Course**: Computer Graphics  
 **Date**: April 2026  
-**Build**: Feature Complete v1.0
 
 ---
 
