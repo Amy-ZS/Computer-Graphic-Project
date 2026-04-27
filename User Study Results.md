@@ -116,22 +116,6 @@ Based on playtest data, these are the **3-5 specific changes** to make before fi
 
 ---
 
-## Playtest Evidence
-
-### Direct Quotes from Subjects
-
-> *"Nothing. Everything is intuitive and easy to understand. If I had to give one suggestion, it would be to change the name of the file from 'fluid.exe' to something like 'start.exe.'"* — S1
-
-> *"My game kept freezing. I have a laptop and I kept getting issues for my driver while the game was playing. But my laptop is pretty crappy."* — S2
-
-> *"Yes, when I enable the render view, my somewhat powerful 4080 can only produce less than one fps."* — S1
-
-> *"Maybe optimize the rendering. The collision view is fine, but the rendering view is very laggy."* — S1
-
-> *"It was all pretty laggy and slow for me. The graphics and collisions looked like it was too much for my laptop to handle."* — S2
-
----
-
 ## Build & Run Instructions
 
 ### Prerequisites
