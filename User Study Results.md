@@ -8,7 +8,7 @@ Less buggy collisions
 
 ### Peer Testing Results
 
-We got 5 students by using the groupme and the Canvas messaging system
+We got 5 of our classmates to peer test by using the groupme and the Canvas messaging system
 
 We did not explain anything to the subjects besides its a fluid based physics simulation and sent them a google forms that has the following questions:
 
