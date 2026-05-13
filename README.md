@@ -48,7 +48,7 @@ No installation needed. Just extract and run.
 ## Known Issues
 
 - Mesh render (F key) can be slow on laptops
-- Windows only – Mac/Linux may have GPU issues
+- Linux only – Mac/Windows may have GPU issues
 
 ---
 
